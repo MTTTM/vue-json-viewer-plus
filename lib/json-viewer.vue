@@ -3,26 +3,31 @@
     ref="viewer"
     :class="jvClass"
   >
-    <div 
-      v-if="copyable"
-      :class="`jv-tooltip ${copyText.align || 'right'}`"
-    >
-      <span
-        ref="clip"
-        class="jv-button"
-        :class="{copied}"
+    <div class="jv-header">
+      <div v-if="allowClickTypeLabel">
+        {{ allowClickTypeLabel }}
+      </div>
+      <div
+        v-if="copyable"
+        :class="` ${copyText.align || 'right'}`"
       >
-        <slot
-          name="copy"
-          :copied="copied"
+        <span
+          ref="clip"
+          class="jv-button"
+          :class="{ copied }"
         >
-          {{ copied ? copyText.copiedText : copyText.copyText }}
-        </slot>
-      </span>
+          <slot
+            name="copy"
+            :copied="copied"
+          >
+            {{ copied ? copyText.copiedText : copyText.copyText }}
+          </slot>
+        </span>
+      </div>
     </div>
     <div
       class="jv-code"
-      :class="{'open': expandCode, boxed}"
+      :class="{ open: expandCode, boxed }"
     >
       <json-box
         ref="jsonBox"
@@ -31,6 +36,7 @@
         :preview-mode="previewMode"
         :show-array-index="showArrayIndex"
         :show-double-quotes="showDoubleQuotes"
+        :allow-click-type="allowClickType"
         @keyclick="onKeyclick"
       />
     </div>
@@ -41,55 +47,63 @@
     >
       <span
         class="jv-toggle"
-        :class="{open: !!expandCode}"
+        :class="{ open: !!expandCode }"
       />
     </div>
   </div>
 </template>
 
 <script>
-import Vue from 'vue'
-import JsonBox from './json-box'
-import Clipboard from 'clipboard'
-import {debounce} from './utils';
+import Vue from "vue";
+import JsonBox from "./json-box";
+import Clipboard from "clipboard";
+import { debounce } from "./utils";
 
 export default {
-  name: 'JsonViewer',
+  name: "JsonViewer",
   components: {
-    JsonBox
+    JsonBox,
   },
   props: {
+    allowClickType:{
+      type:String,
+      default:()=>'all'
+    },
+    allowClickTypeLabel:{
+      type:String,
+      default:()=>""
+    },
     value: {
       type: [Object, Array, String, Number, Boolean, Function],
-      required: true
+      required: true,
     },
     expanded: {
       type: Boolean,
-      default: false
+      default: false,
     },
     expandDepth: {
       type: Number,
-      default: 1
+      default: 1,
     },
     copyable: {
       type: [Boolean, Object],
-      default: false
+      default: false,
     },
     sort: {
       type: Boolean,
-      default: false
+      default: false,
     },
     boxed: {
       type: Boolean,
-      default: false
+      default: false,
     },
     theme: {
       type: String,
-      default: 'jv-light'
+      default: "jv-light",
     },
     timeformat: {
       type: Function,
-      default: value => value.toLocaleString(),
+      default: (value) => value.toLocaleString(),
     },
     previewMode: {
       type: Boolean,
@@ -102,92 +116,93 @@ export default {
     showDoubleQuotes: {
       type: Boolean,
       default: false,
-    }
+    },
   },
-  provide () {
+  provide() {
     return {
       expandDepth: this.expandDepth,
       timeformat: this.timeformat,
       onKeyclick: this.onKeyclick,
-    }
+      allowClickType:this.allowClickType
+    };
   },
-  data () {
+  data() {
     return {
       copied: false,
       expandableCode: false,
-      expandCode: this.expanded
-    }
+      expandCode: this.expanded,
+    };
   },
   computed: {
     jvClass() {
-      return 'jv-container ' + this.theme + (this.boxed ? ' boxed' : '')
+      return "jv-container " + this.theme + (this.boxed ? " boxed" : "");
     },
     copyText() {
-      const { copyText, copiedText, timeout, align } = this.copyable
+      const { copyText, copiedText, timeout, align } = this.copyable;
 
       return {
-        copyText: copyText || 'copy',
-        copiedText: copiedText || 'copied!',
+        copyText: copyText || "copy",
+        copiedText: copiedText || "copied!",
         timeout: timeout || 2000,
         align,
-      }
-    }
+      };
+    },
   },
   watch: {
     value() {
-      this.onResized()
-    }
+      this.onResized();
+    },
   },
   mounted: function () {
     this.debounceResized = debounce(this.debResized.bind(this), 200);
     if (this.boxed && this.$refs.jsonBox) {
-      this.onResized()
-      this.$refs.jsonBox.$el.addEventListener("resized", this.onResized, true)
+      this.onResized();
+      this.$refs.jsonBox.$el.addEventListener("resized", this.onResized, true);
     }
     if (this.copyable) {
       const clipBoard = new Clipboard(this.$refs.clip, {
         container: this.$refs.viewer,
         text: () => {
-          return JSON.stringify(this.value, null, 2)
-        }
+          return JSON.stringify(this.value, null, 2);
+        },
       });
-      clipBoard.on('success', (e) => {
-        this.onCopied(e)
-      })
+      clipBoard.on("success", (e) => {
+        this.onCopied(e);
+      });
     }
   },
   methods: {
-    onResized () {
+    onResized() {
       this.debounceResized();
     },
     debResized() {
       this.$nextTick(() => {
         if (!this.$refs.jsonBox) return;
         if (this.$refs.jsonBox.$el.clientHeight >= 250) {
-          this.expandableCode = true
+          this.expandableCode = true;
         } else {
-          this.expandableCode = false
+          this.expandableCode = false;
         }
-      })
+      });
     },
     onCopied(copyEvent) {
       if (this.copied) {
         return;
       }
-      this.copied = true
+      this.copied = true;
       setTimeout(() => {
-        this.copied = false
-      }, this.copyText.timeout)
-      this.$emit('copied', copyEvent)
+        this.copied = false;
+      }, this.copyText.timeout);
+      this.$emit("copied", copyEvent);
     },
-    toggleExpandCode () {
-      this.expandCode = !this.expandCode
+    toggleExpandCode() {
+      this.expandCode = !this.expandCode;
     },
     onKeyclick(path) {
-      this.$emit('keyclick', path)
-    }
-  }
-}
+      this.$emit("keyclick", path);
+    },
+  },
+};
 </script>
 
 <style lang="scss">
@@ -232,6 +247,22 @@ export default {
     .jv-key {
       color: #111111;
       margin-right: 4px;
+      color: #999;
+      background-color: #eee;
+      cursor: pointer;
+      &:hover{
+        background-color: rgb(200, 199, 199);
+        color: rgb(93, 92, 92);
+      }
+      &.jv-disabled{
+        background-color: transparent;
+        cursor: not-allowed;
+        &:hover{
+          background-color: transparent;
+         cursor: not-allowed;
+         color: #111111;
+        }
+      }
     }
     .jv-item {
       &.jv-array {
@@ -306,7 +337,7 @@ export default {
     transition: transform 0.1s;
 
     &.open {
-      transform: rotate(90deg)
+      transform: rotate(90deg);
     }
   }
 
@@ -330,7 +361,7 @@ export default {
       transform: rotate(90deg);
 
       &.open {
-        transform: rotate(-90deg)
+        transform: rotate(-90deg);
       }
     }
 
@@ -392,6 +423,10 @@ export default {
 
   .j-icon {
     font-size: 12px;
+  }
+  .jv-header{
+    display: flex;
+    justify-content: space-between;
   }
 }
 </style>

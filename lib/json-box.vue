@@ -1,30 +1,30 @@
 <script>
-import { h } from 'vue'
-import JsonString from './types/json-string'
-import JsonUndefined from './types/json-undefined'
-import JsonNumber from './types/json-number'
-import JsonBoolean from './types/json-boolean'
-import JsonObject from './types/json-object'
-import JsonArray from './types/json-array'
-import JsonFunction from './types/json-function'
-import JsonDate from './types/json-date'
+import { h } from "vue";
+import JsonString from "./types/json-string";
+import JsonUndefined from "./types/json-undefined";
+import JsonNumber from "./types/json-number";
+import JsonBoolean from "./types/json-boolean";
+import JsonObject from "./types/json-object";
+import JsonArray from "./types/json-array";
+import JsonFunction from "./types/json-function";
+import JsonDate from "./types/json-date";
 
 export default {
-  name: 'JsonBox',
-  inject: ['expandDepth', 'onKeyclick'],
+  name: "JsonBox",
+  inject: ["expandDepth", "onKeyclick", "allowClickType"],
   props: {
     value: {
       type: [Object, Array, String, Number, Boolean, Function, Date],
-      default: null
+      default: null,
     },
     keyName: {
       type: String,
-      default: ''
+      default: "",
     },
     sort: Boolean,
     depth: {
       type: Number,
-      default: 0
+      default: 0,
     },
     previewMode: Boolean,
     forceExpand: Boolean,
@@ -32,135 +32,176 @@ export default {
     showDoubleQuotes: Boolean,
     path: {
       type: String,
-      default: '$',
+      default: "$",
     },
   },
   data() {
     return {
       expand: true,
       forceExpandMe: this.forceExpand,
-    }
+    };
   },
   mounted() {
-    this.expand = this.previewMode || (this.depth >= this.expandDepth ? false : true) || this.forceExpandMe
+    this.expand =
+      this.previewMode ||
+      (this.depth >= this.expandDepth ? false : true) ||
+      this.forceExpandMe;
   },
   methods: {
     toggle() {
-      this.expand = !this.expand
+      this.expand = !this.expand;
 
-      this.dispatchEvent()
+      this.dispatchEvent();
     },
     toggleAll() {
-      this.expand = !this.expand
-      this.forceExpandMe = this.expand
+      this.expand = !this.expand;
+      this.forceExpandMe = this.expand;
 
-      this.dispatchEvent()
+      this.dispatchEvent();
     },
     dispatchEvent() {
       try {
-        this.$el.dispatchEvent(new Event('resized'))
+        this.$el.dispatchEvent(new Event("resized"));
       } catch (e) {
         // handle IE not supporting Event constructor
-        var evt = document.createEvent('Event')
-        evt.initEvent('resized', true, false)
-        this.$el.dispatchEvent(evt)
+        var evt = document.createEvent("Event");
+        evt.initEvent("resized", true, false);
+        this.$el.dispatchEvent(evt);
       }
     },
     getPath() {
       const path = [this.keyName];
       let p = this.$parent;
-      while(p.depth) {
-        if (p.$el.classList.contains('jv-node')) {
+      while (p.depth) {
+        if (p.$el.classList.contains("jv-node")) {
           path.push(p.keyName);
         }
         p = p.$parent;
       }
-      return path.reverse()
-    }
+      return path.reverse();
+    },
   },
-  render () {
-    let elements = []
-    let dataType
+  render() {
+    let elements = [];
+    let dataType;
+    let dataTypeString;
 
     if (this.value === null || this.value === undefined) {
-      dataType = JsonUndefined
+      dataType = JsonUndefined;
+      dataTypeString = undefined;
     } else if (Array.isArray(this.value)) {
-      dataType = JsonArray
-    } else if (Object.prototype.toString.call(this.value) === '[object Date]') {
-      dataType = JsonDate
-    } else if (typeof this.value === 'object') {
-      dataType = JsonObject
-    } else if (typeof this.value === 'number') {
-      dataType = JsonNumber
-    } else if (typeof this.value === 'string') {
-      dataType = JsonString
-    } else if (typeof this.value === 'boolean') {
-      dataType = JsonBoolean
-    } else if (typeof this.value === 'function') {
-      dataType = JsonFunction
+      dataType = JsonArray;
+      dataTypeString = "array";
+    } else if (Object.prototype.toString.call(this.value) === "[object Date]") {
+      dataType = JsonDate;
+      dataTypeString = "[object Date]";
+    } else if (typeof this.value === "object") {
+      dataType = JsonObject;
+      dataTypeString = "object";
+    } else if (typeof this.value === "number") {
+      dataType = JsonNumber;
+      dataTypeString = "number";
+    } else if (typeof this.value === "string") {
+      dataType = JsonString;
+      dataTypeString = "string";
+    } else if (typeof this.value === "boolean") {
+      dataType = JsonBoolean;
+      dataTypeString = "boolean";
+    } else if (typeof this.value === "function") {
+      dataType = JsonFunction;
+      dataTypeString = "function";
     }
-    const complex = this.keyName && (this.value && (Array.isArray(this.value) || (typeof this.value === 'object' && Object.prototype.toString.call(this.value) !== '[object Date]')))
-
+    const complex =
+      this.keyName &&
+      this.value &&
+      (Array.isArray(this.value) ||
+        (typeof this.value === "object" &&
+          Object.prototype.toString.call(this.value) !== "[object Date]"));
+    console.log(
+      "dataTypeString",
+      dataTypeString,
+      "allowClickType",
+      this.allowClickType,
+      "value",
+      this.value
+    );
     if (!this.previewMode && complex) {
-      elements.push(h('span', {
-        class: {
-          'jv-toggle': true,
-          open: !!this.expand
-        },
-        onClick: (event) => {
-          if (event.altKey) {
-            this.toggleAll()
-          } else {
-            this.toggle()
-          }
-        }
-      }))
+      elements.push(
+        h("span", {
+          class: {
+            "jv-toggle": true,
+            open: !!this.expand,
+          },
+          onClick: (event) => {
+            if (event.altKey) {
+              this.toggleAll();
+            } else {
+              this.toggle();
+            }
+          },
+        })
+      );
     }
 
     if (this.keyName) {
-      elements.push(h('span', {
-        class: {
-          'jv-key': true
-        },
-        innerText: this.showDoubleQuotes ? `"${this.keyName}":` : `${this.keyName}:`,
-        onClick: () => {
-          this.onKeyclick(this.path);
-        }
-      }))
+      const disabled =
+        this.allowClickType != "all" && dataTypeString != this.allowClickType;
+      elements.push(
+        h("span", {
+          class: {
+            "jv-key": true,
+            "jv-disabled": disabled,
+          },
+          innerText: this.showDoubleQuotes
+            ? `"${this.keyName}":`
+            : `${this.keyName}:`,
+          onClick: () => {
+            if (!disabled) {
+              this.onKeyclick(this.path);
+            }
+          },
+        })
+      );
     }
 
-    elements.push(h(dataType, {
-      class: {
-        'jv-push': true
-      },
-      jsonValue: this.value,
-      keyName: this.keyName,
-      sort: this.sort,
-      depth: this.depth,
-      expand: this.expand,
-      previewMode: this.previewMode,
-      forceExpand: this.forceExpandMe,
-      showArrayIndex: this.showArrayIndex,
-      showDoubleQuotes: this.showDoubleQuotes,
-      path: this.path,
-      'onUpdate:expand': value => {
-        this.expand = value
-      },
-      'onUpdate:expandAll': value => {
-        this.expand = value
-        this.forceExpandMe = this.expand
-      }
-    }))
+    elements.push(
+      h(dataType, {
+        class: {
+          "jv-push": true,
+        },
+        jsonValue: this.value,
+        keyName: this.keyName,
+        sort: this.sort,
+        depth: this.depth,
+        expand: this.expand,
+        previewMode: this.previewMode,
+        forceExpand: this.forceExpandMe,
+        showArrayIndex: this.showArrayIndex,
+        showDoubleQuotes: this.showDoubleQuotes,
+        path: this.path,
+        "onUpdate:expand": (value) => {
+          this.expand = value;
+        },
+        "onUpdate:expandAll": (value) => {
+          this.expand = value;
+          this.forceExpandMe = this.expand;
+        },
+      })
+    );
 
-    return h('div', {
-      class: {
-        'jv-node': true,
-        'jv-key-node': Boolean(this.keyName) && !complex,
-        'toggle': !this.previewMode && complex
-      }
-    }, elements)
-  }
-}
+    return h(
+      "div",
+      {
+        class: {
+          "jv-node": true,
+          "jv-key-node": Boolean(this.keyName) && !complex,
+          toggle: !this.previewMode && complex,
+        },
+      },
+      elements
+    );
+  },
+};
 </script>
 
 <style lang="scss">
@@ -168,11 +209,11 @@ export default {
   position: relative;
 
   &:after {
-    content: ','
+    content: ",";
   }
   &:last-of-type {
     &:after {
-      content: ''
+      content: "";
     }
   }
 

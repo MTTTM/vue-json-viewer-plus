@@ -2,10 +2,14 @@
   <div>
     <json-viewer
       preview-mode
-      :value="{'data': {'data': {'data': {'a': 1}}}}"
-    ></json-viewer>
-    <json-viewer :value="jsonData"></json-viewer>
-    <hr />
+      :value="{'data': {'data': {'data': {'a': 1,'b':'1'}}}}"
+      allow-click-type="number"
+      allow-click-type-label="可选类型:number"
+      :copyable="{ copyText: '复制', copiedText: '复制成功', align: 'left' }"
+      @keyclick="onKeyclick"
+    />
+    <!-- <json-viewer :value="jsonData" /> -->
+    <hr>
     <json-viewer
       :value="jsonData"
       :expand-depth="5"
@@ -15,20 +19,27 @@
       sort
       show-double-quotes
       :show-array-index="false"
-      :onKeyclick="onKeyclick"
-      ></json-viewer>
-    <hr />
-    <json-viewer
+      @keyclick="onKeyclick"
+    />
+    <hr>
+    <!-- <json-viewer
       :value="jsonData"
       :expand-depth="1"
       :copyable="{ timeout: 4000, align: 'left' }"
-      :onCopied="onCopied"
+      :on-copied="onCopied"
     >
       <template v-slot:copy="{ copied }">
-        <button v-if="copied" disabled>Copied!</button>
-        <button v-else>Copy me!</button>
+        <button
+          v-if="copied"
+          disabled
+        >
+          Copied!
+        </button>
+        <button v-else>
+          Copy me!
+        </button>
       </template>
-    </json-viewer>
+    </json-viewer> -->
   </div>
 </template>
 
