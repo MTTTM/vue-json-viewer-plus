@@ -2,7 +2,7 @@
   "name": "@lucy2/vue-json-viewer",
   "version": "3.0.6",
   "description": "vuejs展示json的组件",
-  "main": "index.js",
+  "main": "./dist/index.js",
   "files": [
     "./dist/index.js",
     "./dist/ssr.js",
