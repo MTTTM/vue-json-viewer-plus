@@ -2,6 +2,8 @@ const path = require('path');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const { VueLoaderPlugin } = require('vue-loader')
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+let CopyWebpackPlugin = require("copy-webpack-plugin");
+
 
 module.exports = {
     mode: 'production',
@@ -19,7 +21,7 @@ module.exports = {
         ],
     },
     output: {
-        path: path.join(__dirname, '../'),
+        path: path.join(__dirname, '../dist/'),
         filename: 'index.js',
         libraryTarget: 'umd',
         library: 'JsonView',
@@ -71,7 +73,14 @@ module.exports = {
         ]
     },
     plugins: [
-        new VueLoaderPlugin()
+        new VueLoaderPlugin(),
+        new CopyWebpackPlugin([
+            {
+                from: path.resolve(__dirname, "../lib/index.d.ts"),
+                to: path.resolve(__dirname, "../dist/index.d.ts"),
+            },
+        ],
+        )
     ]
 }
 
