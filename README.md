@@ -164,7 +164,7 @@ import 'vue-json-viewer/style.css'
 | `preview-mode` | no expand mode | `false` |
 | `show-array-index` | array show index | `true` |
 | `show-double-quotes` | show double quotes | `false` |
-| `allow-click-type` | allow click type | `all,array,[object Date],object,number,string,boolean,function`|
+| `allow-click-type` | allow click type | `all,array,[object Date],object,number,string,boolean,function,string&number`|
 | `allow-click-type-label` | allow click type label | - |
 
 

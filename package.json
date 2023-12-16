@@ -1,10 +1,10 @@
 {
-  "name": "vue-json-viewer-plus",
-  "version": "3.0.4",
+  "name": "@lucy2/vue-json-viewer",
+  "version": "3.0.5",
   "description": "vuejs展示json的组件",
-  "main": "vue-json-viewer.js",
+  "main": "index.js",
   "files": [
-    "vue-json-viewer.js",
+    "index.js",
     "ssr.js",
     "style.css"
   ],
@@ -74,6 +74,7 @@
     "vue": "^3.2.2"
   },
   "publishConfig": {
-    "registry": "https://registry.npmjs.org"
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   }
 }

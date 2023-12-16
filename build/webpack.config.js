@@ -8,19 +8,19 @@ module.exports = {
     entry: './lib/index.js',
     optimization: {
         minimizer: [
-          new UglifyJsPlugin({
-            cache: true,
-            parallel: true,
-            sourceMap: true,
-            uglifyOptions: {
-              comments: false
-            }
-          }),
+            new UglifyJsPlugin({
+                cache: true,
+                parallel: true,
+                sourceMap: true,
+                uglifyOptions: {
+                    comments: false
+                }
+            }),
         ],
     },
     output: {
         path: path.join(__dirname, '../'),
-        filename: 'vue-json-viewer.js',
+        filename: 'index.js',
         libraryTarget: 'umd',
         library: 'JsonView',
         globalObject: 'this'
@@ -32,8 +32,8 @@ module.exports = {
         ]
     },
     externals: {
-      vue: 'vue',
-      clipboard: 'clipboard'
+        vue: 'vue',
+        clipboard: 'clipboard'
     },
     module: {
         rules: [

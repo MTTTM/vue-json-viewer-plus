@@ -8,6 +8,24 @@
       :copyable="{ copyText: '复制', copiedText: '复制成功', align: 'left' }"
       @keyclick="onKeyclick"
     />
+    <hr>
+    <json-viewer
+      preview-mode
+      :value="{'data': {'data': {'data': {'a': 1,'b':'1'}}}}"
+      allow-click-type="string&number"
+      allow-click-type-label="可选类型:tring&number"
+      :copyable="{ copyText: '复制', copiedText: '复制成功', align: 'left' }"
+      @keyclick="onKeyclick"
+    />
+    <hr>
+    <json-viewer
+      preview-mode
+      :value="{'data': {'data': {'data': {'a': 1,'b':['1']},'f':{f:'xx'}}}}"
+      allow-click-type="array"
+      allow-click-type-label="可选类型:array"
+      :copyable="{ copyText: '复制', copiedText: '复制成功', align: 'left' }"
+      @keyclick="onKeyclick"
+    />
     <!-- <json-viewer :value="jsonData" /> -->
     <hr>
     <json-viewer
@@ -21,6 +39,7 @@
       :show-array-index="false"
       @keyclick="onKeyclick"
     />
+    
     <hr>
     <!-- <json-viewer
       :value="jsonData"

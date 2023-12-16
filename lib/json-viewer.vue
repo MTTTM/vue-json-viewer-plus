@@ -67,7 +67,7 @@ export default {
   props: {
     allowClickType:{
       type:String,
-      default:()=>'all'
+      default:()=>'all',//`all,array,[object Date],object,number,string,boolean,function,string&number`
     },
     allowClickTypeLabel:{
       type:String,

@@ -117,14 +117,14 @@ export default {
       (Array.isArray(this.value) ||
         (typeof this.value === "object" &&
           Object.prototype.toString.call(this.value) !== "[object Date]"));
-    console.log(
-      "dataTypeString",
-      dataTypeString,
-      "allowClickType",
-      this.allowClickType,
-      "value",
-      this.value
-    );
+    // console.log(
+    //   "dataTypeString",
+    //   dataTypeString,
+    //   "allowClickType",
+    //   this.allowClickType,
+    //   "value",
+    //   this.value
+    // );
     if (!this.previewMode && complex) {
       elements.push(
         h("span", {
@@ -145,7 +145,7 @@ export default {
 
     if (this.keyName) {
       const disabled =
-        this.allowClickType != "all" && dataTypeString != this.allowClickType;
+        this.allowClickType != "all" && dataTypeString != this.allowClickType&&this.allowClickType.split("&").includes(dataTypeString)===false;
       elements.push(
         h("span", {
           class: {
